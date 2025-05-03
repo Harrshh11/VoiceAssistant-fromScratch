@@ -1,7 +1,7 @@
 import pvporcupine
 import pyaudio
 import struct
-from enginee.command import allCommands  # ✅ Import here
+from enginee.command import allCommands  
 
 def start_hotword_detection():
     porcupine = pvporcupine.create(keywords=["hey siri"])
@@ -24,4 +24,4 @@ def start_hotword_detection():
 
         if result >= 0:
             print("Hotword detected!")
-            allCommands()  # ✅ Directly call the function from command.py
+            allCommands()  #  Directly call the function from command.py

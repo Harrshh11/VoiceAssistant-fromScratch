@@ -27,10 +27,10 @@ def play_sound():
 # Open the Chrome App view
 os.system('start msedge.exe --app="http://localhost:8000/index.html"')
 
-# ✅ Start keyboard listener in a thread
+# Start keyboard listener in a thread
 threading.Thread(target=start_keyboard_listener, daemon=True).start()
 
-# ✅ Start hotword detection after a short delay
+# Start hotword detection after a short delay
 def delayed_hotword_start():
     time.sleep(3)  # Wait 3 seconds for everything to load
     start_hotword_detection()

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="SARA - Your intelligent voice assistant" />
+  <title>SARA</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <!-- Textillate & Animate -->
+  <link rel="stylesheet" href="assets/textillate/animate.css" />
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    /* Fade animation */
+    .fade-out { opacity: 0; transition: opacity 0.5s ease-out; pointer-events: none; }
+    .fade-in { opacity: 1; transition: opacity 0.5s ease-in; pointer-events: auto; }
+
+    /* Elements fade */
+    #Oval, #Siriwave { opacity: 1; transition: opacity 0.5s ease; }
+
+    /* Chat popup styling */
+    .chat-popup {
+      display: none;
+      position: fixed;
+      bottom: 100px;
+      right: 30px;
+      width: 300px;
+      max-height: 400px;
+      background-color: #000;
+      color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(255,255,255,0.2);
+      z-index: 9999;
+      overflow: hidden;
+      border: 1px solid #444;
+    }
+
+    .chat-header {
+      background-color: #111;
+      padding: 10px;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #333;
+    }
+
+    .chat-content {
+      padding: 10px;
+      overflow-y: auto;
+      max-height: 300px;
+      font-size: 14px;
+    }
+
+    .chat-entry {
+      margin-bottom: 10px;
+      border-bottom: 1px dashed #555;
+      padding-bottom: 5px;
+    }
+
+    .close-btn {
+      background: transparent;
+      color: #fff;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Main Chat Section -->
+    <section id="Oval" class="ab-4">
+      <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+          <div class="d-flex justify-content-center align-items-center position-relative" style="height:80vh;">
+            <canvas id="canvasOne" width="800" height="600" style="position: absolute;"></canvas>
+            <div id="SARA" role="img" aria-label="SARA voice assistant animation">
+              <div class="square">
+                <span class="circle"></span>
+                <span class="circle"></span>
+                <span class="circle"></span>
+              </div>
+            </div>
+          </div>
+
+          <h5 class="ask-text text-center mt-4">Ask me anything...</h5>
+
+          <!-- Input Area -->
+          <div class="col-md-12">
+            <div id="textInput" class="d-flex justify-content-center mt-3">
+              <div class="center-wrapper">
+                <div class="glass-card">
+                  <div class="chat-container d-flex align-items-center">
+                    <input type="text" name="Chatbox" id="Chatbox" class="chat-input" placeholder="Type here..." aria-label="Type your message" />
+                    <button id="MicBtn" class="icon-button" aria-label="Start voice input"><i class="bi bi-mic"></i></button>
+                    <button id="ChatBtn" class="icon-button" aria-label="Send text message"><i class="bi bi-chat-dots"></i></button>
+                    <button id="SettingsBtn" class="icon-button" aria-label="Open settings"><i class="bi bi-gear"></i></button>
+                    <div id="settingsPopup" class="popup hidden">
+                      <p class="popup-text">Hmm… Looks like your VS Code doesn’t support this realm.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chat History Popup -->
+          <div id="ChatHistoryPopup" class="chat-popup" role="dialog" aria-modal="true" aria-labelledby="chatHistoryLabel">
+            <div class="chat-header">
+              <span id="chatHistoryLabel">Chat History</span>
+              <button class="close-btn" onclick="toggleChatHistory()" aria-label="Close chat history">&times;</button>
+            </div>
+            <div id="ChatHistoryContent" class="chat-content" role="log"></div>
+          </div>
+        </div>
+        <div class="col-md-1"></div>
+      </div>
+    </section>
+
+    <!-- Siriwave Visual -->
+    <section id="Siriwave" class="ab-4" style="display: none;">
+      <div class="container">
+        <div class="row">
+          <div class="col-12 text-center mt-5">
+            <p class="text-start text-light nb-4 siri-message" style="font-size:28px;">Hello, I am Sara...</p>
+            <div id="siriwave-container" style="width: 100%; height: 200px; margin-top: 30px;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div id="settingsPopup" class="popup hidden">
+    <p class="popup-text">Hmm… Looks like your VS Code doesn’t support this realm.</p>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/siriwave/dist/siriwave.umd.min.js"></script>
+  <script src="assets/textillate/jquery.fittext.js"></script>
+  <script src="assets/textillate/jquery.lettering.js"></script>
+  <script src="assets/textillate/jquery.textillate.js"></script>
+  <script src="script.js"></script>
+  <script src="main.js"></script>
+  <script src="/eel.js"></script>
+  <script src="controller.js"></script>
+
+  <!-- Auto-start voice command from backend -->
+  <script>
+    setTimeout(() => {
+      eel.allCommands()(response => console.log("Voice command handled, returned:", response));
+    }, 1000);
+  </script>
+
+  <script>
+    function toggleChatHistory() {
+      const popup = document.getElementById("ChatHistoryPopup");
+      popup.style.display = (popup.style.display === "none" || popup.style.display === "") ? "block" : "none";
+    }
+
+    function appendToChatHistory(userInput, assistantResponse) {
+      const chatContent = document.getElementById("ChatHistoryContent");
+      const entry = document.createElement("div");
+      entry.className = "chat-entry";
+      entry.innerHTML = `<strong>You:</strong> ${userInput}<br><strong>Siri:</strong> ${assistantResponse}`;
+      chatContent.appendChild(entry);
+
+      const history = JSON.parse(localStorage.getItem("chatHistory") || "[]");
+      history.push({ user: userInput, assistant: assistantResponse });
+      localStorage.setItem("chatHistory", JSON.stringify(history));
+    }
+
+    window.onload = () => {
+      eel.play_sound();
+
+      const savedChat = localStorage.getItem("chatMemory");
+      if (savedChat) {
+        document.getElementById("Chatbox").value = savedChat;
+        localStorage.removeItem("chatMemory");
+      }
+
+      const storedHistory = JSON.parse(localStorage.getItem("chatHistory") || "[]");
+      const chatContent = document.getElementById("ChatHistoryContent");
+
+      storedHistory.forEach(entry => {
+        const div = document.createElement("div");
+        div.className = "chat-entry";
+        div.innerHTML = `<strong>You:</strong> ${entry.user}<br><strong>Siri:</strong> ${entry.assistant}`;
+        chatContent.appendChild(div);
+      });
+    };
+
+    const chatInput = document.getElementById("Chatbox");
+    const chatButton = document.getElementById("ChatBtn");
+    const micButton = document.getElementById("MicBtn");
+    const chatSection = document.getElementById("Oval");
+    const siriWaveSection = document.getElementById("Siriwave");
+
+    const siriWave = new SiriWave({
+      container: document.getElementById("siriwave-container"),
+      width: 800,
+      height: 200,
+      style: "ios9",
+      amplitude: 1,
+      speed: 0.3,
+      autostart: true
+    });
+
+    function showSiriWave() {
+      chatSection.classList.add("fade-out");
+      setTimeout(() => {
+        chatSection.style.display = "none";
+        siriWaveSection.style.display = "block";
+        siriWaveSection.classList.add("fade-in");
+        siriWave.start();
+      }, 500);
+    }
+
+    function hideSiriWave() {
+      siriWave.stop();
+      siriWaveSection.classList.remove("fade-in");
+      siriWaveSection.style.display = "none";
+      chatSection.style.display = "block";
+      chatSection.classList.remove("fade-out");
+      chatSection.classList.add("fade-in");
+    }
+
+    if (chatInput && chatButton && micButton) {
+      chatInput.addEventListener("keypress", e => {
+        if (e.key === "Enter" && chatInput.value.trim()) showSiriWave();
+      });
+
+      chatButton.addEventListener("click", () => {
+        chatInput.value.trim() ? showSiriWave() : toggleChatHistory();
+      });
+
+      micButton.addEventListener("click", () => {
+        showSiriWave();
+        eel.start_listening()(text => {
+          chatInput.value = text;
+          hideSiriWave();
+        });
+      });
+    }
+  </script>
+</body>
+</html>

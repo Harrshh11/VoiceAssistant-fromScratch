@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SiriWave Page</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
+        crossorigin="anonymous">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="container position-relative">
+
+        <!-- Back Button -->
+        <a href="index.html" class="btn btn-light position-absolute top-0 start-0 m-3 shadow">
+            <i class="bi bi-arrow-left"></i> Back
+        </a>
+
+        <div class="row">
+            <div class="col-12 text-center mt-5">
+                <h2 class="classic-font">SiriWave Effect</h2>
+                <div id="siriwave-container" style="width: 100%; height: 200px; margin-top: 30px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+
+    <!-- Bootstrap Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+
+    <!-- SiriWave Script -->
+    <script src="https://unpkg.com/siriwave/dist/siriwave.umd.min.js"></script>
+
+    <!-- Custom Script -->
+    <script>
+        const siriwave = new SiriWave({
+            container: document.getElementById("siriwave-container"),
+            width: 800,
+            height: 200,
+            style: "ios9",
+            amplitude: 1,
+            speed: 0.3,
+            autostart: true
+        });
+
+        // Microphone visualization
+        navigator.mediaDevices.getUserMedia({ audio: true, video: false })
+            .then(function (stream) {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const source = audioContext.createMediaStreamSource(stream);
+                const analyser = audioContext.createAnalyser();
+                analyser.fftSize = 256;
+                source.connect(analyser);
+
+                const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+                function animate() {
+                    analyser.getByteFrequencyData(dataArray);
+
+                    let values = 0;
+                    for (let i = 0; i < dataArray.length; i++) {
+                        values += dataArray[i];
+                    }
+                    const average = values / dataArray.length;
+
+                    siriwave.setAmplitude(Math.max(0.5, average / 30));
+
+                    requestAnimationFrame(animate);
+                }
+
+                animate();
+            })
+            .catch(function (err) {
+                console.error('Microphone access denied!', err);
+            });
+    </script>
+
+    <!-- Auto-start voice command from backend -->
+<script>
+    // Wait a little so wave appears smoothly, then start recognition
+    setTimeout(() => {
+        eel.allCommands()(function(response) {
+            console.log("Voice command handled, returned:", response);
+        });
+    }, 1000);  // 1 second delay before triggering backend
+</script>
+
+
+    <!-- Eel Back Function -->
+    <script>
+        eel.expose(go_back);
+        function go_back() {
+            const chatValue = localStorage.getItem("chatMemory");
+            if (!chatValue) {
+                localStorage.setItem("chatMemory", document.getElementById("Chatbox")?.value || "");
+            }
+            window.location.href = "index.html";
+        }
+    </script>
+</body>
+
+</html>

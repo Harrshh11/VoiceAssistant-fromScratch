@@ -1,2 +1,2 @@
-# Harsh[GitHub
+# Harsh-GitHub
 

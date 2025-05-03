@@ -2,7 +2,7 @@ $(document).ready(function () {
 
   eel.expose(DisplayMessage);
   function DisplayMessage(message) {
-      $(".siri-message").text(message);   // ✅ fix selector, remove 'li:first'
+      $(".siri-message").text(message);   // fix selector, remove 'li:first'
       $('.siri-message').textillate({
         in: { effect: 'fadeInUp' },
         loop: false

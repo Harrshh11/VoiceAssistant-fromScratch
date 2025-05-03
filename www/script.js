@@ -71,7 +71,7 @@ function init() {
     count = wait - 1;
     numToAddEachFrame = 16;
 
-    // ✅ Changed to white particles
+    
     r = 255;
     g = 255;
     b = 255;
@@ -143,7 +143,7 @@ function onTimer() {
     sinAngle = Math.sin(turnAngle);
     cosAngle = Math.cos(turnAngle);
 
-    // ✅ Background changed to charcoal black
+    //  Background changed to charcoal black
     context.fillStyle = "rgb(30,30,30)"; // charcoal black
     context.fillRect(0, 0, displayWidth, displayHeight);
 
